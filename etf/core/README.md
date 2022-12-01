@@ -85,7 +85,7 @@ Creating New Modules
 TODO after module generation
 
 - Create Module structure inside `/modules/module-name.model.ts`
-- Import the module-class inside `db.config.ts` after `sequelize.addModels([User]);` in similar way to User where User will be replaced withe the module-name class
+- Import the `module-name.model.ts` class inside `db.config.ts` after `sequelize.addModels([User]);` in similar way to `User` where `User` will be replaced withe the `module-name.model.ts` class
 - Create a variable for `module-name => moduleName` inside `app.ts`
 - Initialize object on `module-name` from `module-name class` like `this.moduleName = new ModuleNameApi(this.db)` inside `constructor`
 - In `routes()` create an custom route for your module like `this.express.use(this.baseApiServerPath + "/moduleBasePath",this.moduleName.router);`
@@ -100,9 +100,38 @@ Configuring the API's for module-name
         post: false,
         put: false,
         delete: false,
-      },` is passed. The first one is for wheather the module requires a JWT token for execution and the second is for weather the base API is active or not.
+      },` is passed. The first one is for wheather the module requires a JWT token for execution and the second is for weather the core API is active or not.
 
 - The JWT token needs to be sent in the `header` as `authorization` in `Bearer token` format.
+
+## Roadmap
+
+The project is divided into 2 Libraries `etf-cli` and `etf-core`
+
+### etf-core
+
+Version - 0.2.x
+
+- Implementation of DB Setup at `etf -n`
+- Implementation of Module setup for `authorization` and `isActive` of core-api on module generation via `etf -g`
+
+Version - 0.3.x
+
+- Implementation of swagger-ui
+- Implementation to pass Model name inside `module-name.model.ts`
+- Implementation of auto addition of `module` in `app.ts` and auto addition of `model` in `db.config.ts`
+
+### etf-core
+
+Version - 0.1.x
+
+- Addition of `get by id (get/:id)` API
+
+Version - 0.2.x
+
+- Enhancement in `JWT` and `validateToken` functionality
+- Addition of `csrfTokens` middleware
+
 ## Authors
 
 - [@AllPlayer](http://github.com/AllPlayer/)
