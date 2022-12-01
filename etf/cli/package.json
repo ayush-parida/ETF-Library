@@ -20,5 +20,14 @@
     "@types/node": "^18.11.9",
     "generate-template-files": "^3.2.1",
     "typescript": "^4.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AllPlayer/ETF-Library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AllPlayer/ETF-Library/issues"
+  },
+  "homepage": "https://github.com/AllPlayer/ETF-Library#readme"
+}
 }
