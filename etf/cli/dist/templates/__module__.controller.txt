@@ -1,0 +1,15 @@
+import { __module__(pascalCase)Logger } from "./__module__(kebabCase).logger";
+import { __module__(pascalCase)Service } from "./__module__(kebabCase).service";
+interface Login {
+  username: string;
+  password: string;
+}
+export class __module__(pascalCase)Controller {
+  private __module__(camelCase)Logger: __module__(pascalCase)Logger;
+  private __module__(camelCase)Service: __module__(pascalCase)Service;
+
+  constructor(db: any) {
+    this.__module__(camelCase)Logger = new __module__(pascalCase)Logger();
+    this.__module__(camelCase)Service = new __module__(pascalCase)Service(db);
+  }
+}

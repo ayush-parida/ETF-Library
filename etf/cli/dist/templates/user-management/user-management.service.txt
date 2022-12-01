@@ -1,0 +1,19 @@
+import { User } from "./user-management.model";
+import { UserManagementRepository } from "./user-management.repository";
+import { ValidateToken } from "../../middlewares/validateToken";
+
+export class UserManagementService {
+  private userManagementRepository: UserManagementRepository;
+  private validator: ValidateToken = new ValidateToken();
+  constructor(db: any) {
+    this.userManagementRepository = new UserManagementRepository(db, User);
+  }
+
+  async login(username: string, password: string) {
+    let res = await this.userManagementRepository.login(username);
+    return this.validator.generateToken(res, username, password);
+  }
+  async refreshToken(req: any) {
+    return await this.userManagementRepository.refreshToken(req);
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "etf-cli",
+  "version": "0.1.2",
+  "description": "CLI for ETF which is a Framework for API using Express, Typescript and PostgreSQL",
+  "main": "dist/index.js",
+  "bin": {
+    "etf": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ayush Parida",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^9.4.1",
+    "figlet": "^1.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "generate-template-files": "^3.2.1",
+    "typescript": "^4.9.3"
+  }
+}

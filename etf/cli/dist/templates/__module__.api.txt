@@ -1,0 +1,33 @@
+import { __module__(pascalCase)Controller } from "./__module__(kebabCase).controller";
+import { __module__(pascalCase) } from "./__module__(kebabCase).model";
+import { Api } from "../../common/api";
+
+export class __module__(pascalCase)Api extends Api {
+  __module__(camelCase)Controller: __module__(pascalCase)Controller;
+  constructor(db: any) {
+    super(__module__(pascalCase), db);
+    this.baseController = "";
+    this.info = "__module__(pascalCase)";
+    this.routes(
+      this.baseController,
+      this.info,
+      {
+        get: false,
+        getId: false,
+        post: false,
+        put: false,
+        delete: false,
+      },
+      {
+        get: true,
+        getId: true,
+        post: true,
+        put: true,
+        delete: true,
+      }
+    );
+    this.__module__(camelCase)Controller = new __module__(pascalCase)Controller(db);
+    this.customRoutes();
+  }
+  customRoutes(): void {}
+};

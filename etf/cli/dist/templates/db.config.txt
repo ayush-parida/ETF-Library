@@ -1,0 +1,41 @@
+import { Dialect } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
+import { User } from "./src/modules/user-management/user-management.model";
+
+export const connect = () => {
+  const hostName = "localhost";
+  const userName = "ayushparida";
+  const password = "";
+  const database = "erp_server";
+  const dialect: Dialect = "postgres";
+
+  const operatorsAliases: any = false;
+
+  const sequelize = new Sequelize(database, userName, password, {
+    host: hostName,
+    dialect,
+    operatorsAliases,
+    repositoryMode: true,
+    pool: {
+      max: 10,
+      min: 0,
+      acquire: 20000,
+      idle: 5000,
+    },
+  });
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log("Connection has been established successfully.");
+    })
+    .catch((err) => {
+      console.error("Unable to connect to the database:", err);
+    });
+
+  sequelize.addModels([User]);
+
+  const db: any = {};
+  db.Sequelize = Sequelize;
+  db.sequelize = sequelize;
+  return db;
+};
