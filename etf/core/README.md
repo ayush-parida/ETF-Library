@@ -12,6 +12,7 @@ Install with npm
 
 ```bash
   mkdir project_name
+  cd project_name
   npm install etf-cli -g
   npm install etf-core
   
