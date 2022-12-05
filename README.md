@@ -90,7 +90,7 @@ TODO after module generation
 - Create Module structure inside `/modules/module-name.model.ts`
 - Import the `module-name.model.ts` class inside `db.config.ts` after `sequelize.addModels([User]);` in similar way to `User` where `User` will be replaced withe the `module-name.model.ts` class
 - Create a variable for `module-name => moduleName` inside `app.ts`
-- Initialize object on `module-name` from `module-name class` like `this.moduleName = new ModuleNameApi(this.db, new validateToken*())` inside `constructor`
+- Initialize object on `module-name` from `module-name class` like `this.moduleName = new ModuleNameApi(this.db, new validateToken())` inside `constructor`
 - In `routes()` create an custom route for your module like `this.express.use(this.baseApiServerPath + "/moduleBasePath",this.moduleName.router);`
 
 Configuring the API's for module-name
