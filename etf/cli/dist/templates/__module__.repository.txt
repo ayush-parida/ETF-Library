@@ -1,4 +1,4 @@
-import { Repository } from "../../common/repository";
+import { Repository } from "etf-core";
 import { __module__(pascalCase)Logger } from "./user-management.logger";
 
 export class __module__(pascalCase)Repository extends Repository {

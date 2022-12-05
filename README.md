@@ -5,6 +5,7 @@ This is a framework built using Express and Typescript to provide an API server 
 
 The cli will generate a default module named user-management which will contain `customRoutes()` containing two custom API's `/login` and `refresh-token` which are used for authentication for the API's.
 
+The project is divided into 2 Libraries [etf-cli](https://www.npmjs.com/package/etf-cli) and [etf-core](https://www.npmjs.com/package/etf-core)
 
 ## Installation
 
@@ -70,7 +71,7 @@ Run the Project
 
 Note - 
 
-- For each module there are currently 4 Base API's present
+- For each module there are currently 5 Base API's present
 ```bash
 - get method - to get all entries (/)
 - get method - to get a single entry by id (/:id)
@@ -89,7 +90,7 @@ TODO after module generation
 - Create Module structure inside `/modules/module-name.model.ts`
 - Import the `module-name.model.ts` class inside `db.config.ts` after `sequelize.addModels([User]);` in similar way to `User` where `User` will be replaced withe the `module-name.model.ts` class
 - Create a variable for `module-name => moduleName` inside `app.ts`
-- Initialize object on `module-name` from `module-name class` like `this.moduleName = new ModuleNameApi(this.db)` inside `constructor`
+- Initialize object on `module-name` from `module-name class` like `this.moduleName = new ModuleNameApi(this.db, new validateToken*())` inside `constructor`
 - In `routes()` create an custom route for your module like `this.express.use(this.baseApiServerPath + "/moduleBasePath",this.moduleName.router);`
 
 Configuring the API's for module-name
@@ -105,10 +106,9 @@ Configuring the API's for module-name
       },` is passed. The first one is for wheather the module requires a JWT token for execution and the second is for weather the core API is active or not.
 
 - The JWT token needs to be sent in the `header` as `authorization` in `Bearer token` format.
-
 ## Roadmap
 
-The project is divided into 2 Libraries `etf-cli` and `etf-core`
+The project is divided into 2 Libraries [etf-cli](https://www.npmjs.com/package/etf-cli) and [etf-core](https://www.npmjs.com/package/etf-core)
 
 ### etf-cli
 
@@ -138,9 +138,6 @@ Version - 0.3.x
 - Enhancement in `JWT` and `validateToken` functionality
 - Addition of `csrfTokens` middleware
 
-## Authors
-
-- [@AllPlayer](http://github.com/AllPlayer/)
 
 ## Resolved Issues & New Features
 
@@ -152,6 +149,10 @@ Version - 0.1.2
 
 ### etf-cli
 
-Version - 0.1.4
+Version - 0.1.5
 
 - Issue resolved for `etf -n` command execution
+## Authors
+
+- [@AllPlayer](http://github.com/AllPlayer/)
+

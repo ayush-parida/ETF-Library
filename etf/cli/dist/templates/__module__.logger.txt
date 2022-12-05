@@ -1,4 +1,4 @@
-import { Logger } from "../../common/logger";
+import { Logger } from "etf-core";
 
 export class __module__(pascalCase)Logger extends Logger {
   constructor() {
