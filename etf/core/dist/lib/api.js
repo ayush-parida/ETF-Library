@@ -21,7 +21,9 @@ class Api {
             });
         if (isActive.getId)
             this.router.get(this.baseController + "/:id", (req, res) => {
-                this.controller.getById(this.info, parseInt(req.params.id), authentication.getId, req);
+                this.controller
+                    .getById(this.info, parseInt(req.params.id), authentication.getId, req)
+                    .then((data) => res.json(data));
             });
         if (isActive.post)
             this.router.post(this.baseController, (req, res) => {

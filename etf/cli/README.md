@@ -125,7 +125,7 @@ Version - 0.3.x
 
 ### etf-core
 
-Version - 0.1.1 (released)
+Version - 0.1.2 (released)
 
 - Addition of `get by id (get/:id)` API
 
@@ -146,7 +146,7 @@ Version - 0.3.x
 
 ### etf-core
 
-Version - 0.1.1
+Version - 0.1.2
 
 - Addition of `get by id (get/:id)` API
 
