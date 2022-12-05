@@ -89,6 +89,7 @@ if (options.generate) {
     // });
 }
 function generateProject() {
+    let name = "";
     generateTemplateFilesBatch([
         {
             option: "API",

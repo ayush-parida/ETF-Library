@@ -109,7 +109,7 @@ Configuring the API's for module-name
 
 The project is divided into 2 Libraries `etf-cli` and `etf-core`
 
-### etf-core
+### etf-cli
 
 Version - 0.2.x
 
