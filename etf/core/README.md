@@ -73,6 +73,7 @@ Note -
 - For each module there are currently 4 Base API's present
 ```bash
 - get method - to get all entries (/)
+- get method - to get a single entry by id (/:id)
 - post method - to create a new entry (/, body)
 - put method - to update a single entry (/, body)
 - delete method - to delete a single entry (/:id)
@@ -124,11 +125,15 @@ Version - 0.3.x
 
 ### etf-core
 
-Version - 0.1.x
+Version - 0.1.1 (released)
 
 - Addition of `get by id (get/:id)` API
 
 Version - 0.2.x
+
+- Addition of query params in API's
+
+Version - 0.3.x
 
 - Enhancement in `JWT` and `validateToken` functionality
 - Addition of `csrfTokens` middleware
@@ -137,3 +142,16 @@ Version - 0.2.x
 
 - [@AllPlayer](http://github.com/AllPlayer/)
 
+## Resolved Issues & New Features
+
+### etf-core
+
+Version - 0.1.1
+
+- Addition of `get by id (get/:id)` API
+
+### etf-cli
+
+Version - 0.1.4
+
+- Issue resolved for `etf -n` command execution
