@@ -48,6 +48,7 @@ class Controller {
             }
             else {
                 this.logger.info(info, { id });
+                return yield this.service.getById(id);
             }
         });
     }
@@ -98,6 +99,7 @@ class Controller {
             }
             else {
                 this.logger.info(info, { id });
+                return yield this.service.delete(id);
             }
         });
     }

@@ -36,6 +36,7 @@ export class Controller {
       }
     } else {
       this.logger.info(info, { id });
+      return await this.service.getById(id);
     }
   }
 
@@ -77,6 +78,7 @@ export class Controller {
       }
     } else {
       this.logger.info(info, { id });
+      return await this.service.delete(id);
     }
   }
 }

@@ -35,10 +35,11 @@ export class Repository {
           id: reqId,
         },
       });
+      return data;
     } catch (err) {
       this.logger.error("Error::" + err);
+      return { err };
     }
-    return data;
   }
 
   async create(req: BaseModel) {
@@ -46,10 +47,11 @@ export class Repository {
     try {
       req.createdAt = new Date().toISOString();
       data = await this.repo.create(req);
+      return { ...data, ...{ response: "Success" } };
     } catch (err) {
       this.logger.error("Error::" + err);
+      return { err };
     }
-    return data;
   }
 
   async update(req: BaseModel) {
@@ -64,10 +66,11 @@ export class Repository {
           },
         }
       );
+      return { ...data, ...{ response: "Success" } };
     } catch (err) {
       this.logger.error("Error::" + err);
+      return { err };
     }
-    return data;
   }
 
   async delete(reqId: number) {
@@ -78,6 +81,7 @@ export class Repository {
           id: reqId,
         },
       });
+      return { ...data, ...{ response: "Success" } };
     } catch (err) {
       this.logger.error("Error::" + err);
     }

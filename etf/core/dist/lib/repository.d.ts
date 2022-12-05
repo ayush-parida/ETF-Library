@@ -12,8 +12,18 @@ export declare class Repository {
     constructor(model: any, db: any);
     get(): Promise<any>;
     getById(reqId: number): Promise<{}>;
-    create(req: BaseModel): Promise<{}>;
-    update(req: BaseModel): Promise<{}>;
+    create(req: BaseModel): Promise<{
+        response: string;
+        err?: undefined;
+    } | {
+        err: unknown;
+    }>;
+    update(req: BaseModel): Promise<{
+        response: string;
+        err?: undefined;
+    } | {
+        err: unknown;
+    }>;
     delete(reqId: number): Promise<{}>;
 }
 export {};

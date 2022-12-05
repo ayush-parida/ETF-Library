@@ -39,11 +39,12 @@ class Repository {
                         id: reqId,
                     },
                 });
+                return data;
             }
             catch (err) {
                 this.logger.error("Error::" + err);
+                return { err };
             }
-            return data;
         });
     }
     create(req) {
@@ -52,11 +53,12 @@ class Repository {
             try {
                 req.createdAt = new Date().toISOString();
                 data = yield this.repo.create(req);
+                return Object.assign(Object.assign({}, data), { response: "Success" });
             }
             catch (err) {
                 this.logger.error("Error::" + err);
+                return { err };
             }
-            return data;
         });
     }
     update(req) {
@@ -69,11 +71,12 @@ class Repository {
                         id: req.id,
                     },
                 });
+                return Object.assign(Object.assign({}, data), { response: "Success" });
             }
             catch (err) {
                 this.logger.error("Error::" + err);
+                return { err };
             }
-            return data;
         });
     }
     delete(reqId) {
@@ -85,6 +88,7 @@ class Repository {
                         id: reqId,
                     },
                 });
+                return Object.assign(Object.assign({}, data), { response: "Success" });
             }
             catch (err) {
                 this.logger.error("Error::" + err);
