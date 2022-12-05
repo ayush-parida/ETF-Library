@@ -27,6 +27,20 @@ export class Repository {
     }
   }
 
+  async getById(reqId: number) {
+    let data = {};
+    try {
+      data = await this.repo.findOne({
+        where: {
+          id: reqId,
+        },
+      });
+    } catch (err) {
+      this.logger.error("Error::" + err);
+    }
+    return data;
+  }
+
   async create(req: BaseModel) {
     let data = {};
     try {

@@ -30,6 +30,22 @@ class Repository {
             }
         });
     }
+    getById(reqId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = {};
+            try {
+                data = yield this.repo.findOne({
+                    where: {
+                        id: reqId,
+                    },
+                });
+            }
+            catch (err) {
+                this.logger.error("Error::" + err);
+            }
+            return data;
+        });
+    }
     create(req) {
         return __awaiter(this, void 0, void 0, function* () {
             let data = {};

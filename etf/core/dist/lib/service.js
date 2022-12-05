@@ -21,6 +21,11 @@ class Service {
             return yield this.repo.get();
         });
     }
+    getById(reqId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.repo.getById(reqId);
+        });
+    }
     create(req) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.repo.create(req);

@@ -12,6 +12,10 @@ export class Service {
     return await this.repo.get();
   }
 
+  async getById(reqId: number) {
+    return await this.repo.getById(reqId);
+  }
+
   async create(req: object) {
     return await this.repo.create(req);
   }

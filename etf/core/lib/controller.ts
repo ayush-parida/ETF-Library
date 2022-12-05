@@ -26,6 +26,19 @@ export class Controller {
     }
   }
 
+  async getById(info: string, id: number, authentication: boolean, req: any) {
+    if (authentication) {
+      if (this.validator.isValid(req)) {
+        this.logger.info(info, { id });
+        return await this.service.getById(id);
+      } else {
+        return { error: ["Unauthorized"] };
+      }
+    } else {
+      this.logger.info(info, { id });
+    }
+  }
+
   async create(info: string, data: object, authentication: boolean, req: any) {
     if (authentication) {
       if (this.validator.isValid(req)) {
@@ -58,7 +71,7 @@ export class Controller {
     if (authentication) {
       if (this.validator.isValid(req)) {
         this.logger.info(info, { id });
-        return await this.service.update({ id });
+        return await this.service.delete(id);
       } else {
         return { error: ["Unauthorized"] };
       }

@@ -11,6 +11,7 @@ export declare class Repository {
     repo: any;
     constructor(model: any, db: any);
     get(): Promise<any>;
+    getById(reqId: number): Promise<{}>;
     create(req: BaseModel): Promise<{}>;
     update(req: BaseModel): Promise<{}>;
     delete(reqId: number): Promise<{}>;

@@ -35,6 +35,22 @@ class Controller {
             }
         });
     }
+    getById(info, id, authentication, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (authentication) {
+                if (this.validator.isValid(req)) {
+                    this.logger.info(info, { id });
+                    return yield this.service.getById(id);
+                }
+                else {
+                    return { error: ["Unauthorized"] };
+                }
+            }
+            else {
+                this.logger.info(info, { id });
+            }
+        });
+    }
     create(info, data, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
@@ -74,7 +90,7 @@ class Controller {
             if (authentication) {
                 if (this.validator.isValid(req)) {
                     this.logger.info(info, { id });
-                    return yield this.service.update({ id });
+                    return yield this.service.delete(id);
                 }
                 else {
                     return { error: ["Unauthorized"] };

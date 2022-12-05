@@ -19,6 +19,10 @@ class Api {
                     .get(this.info, authentication.get, req)
                     .then((data) => res.json(data));
             });
+        if (isActive.getId)
+            this.router.get(this.baseController + "/:id", (req, res) => {
+                this.controller.getById(this.info, parseInt(req.params.id), authentication.getId, req);
+            });
         if (isActive.post)
             this.router.post(this.baseController, (req, res) => {
                 this.controller
