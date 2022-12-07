@@ -14,17 +14,27 @@ Install with npm
 ```bash
   mkdir project_name
   cd project_name
+  npm init
   npm install etf-cli -g
+  npm install etf-cli
   npm install etf-core
   
 ```
+Add the following scripts in your package.json
+```
+  "scripts": {
+    "start": "ts-node index.ts",
+    "dev": "./node_modules/nodemon/bin/nodemon.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+```
+
 Add the following dependencies and devDependencies to package.json
+along with the already existing `etf-cli` and `etf-core`
 
 ```bash
   "dependencies": {
     "body-parser": "^1.20.1",
-    "etf-cli": "^0.1.1",
-    "etf-core": "^0.0.7",
     "express": "^4.18.2",
     "@types/jsonwebtoken": "^8.5.9",
     "bcrypt-nodejs": "^0.0.3",
