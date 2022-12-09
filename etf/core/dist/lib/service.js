@@ -16,29 +16,29 @@ class Service {
         this.repo = new repository_1.Repository(model, db);
         this.validator = validator;
     }
-    get() {
+    get(req, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.repo.get();
+            return yield this.repo.get(req.query, id);
         });
     }
-    getById(reqId) {
+    getById(reqId, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.repo.getById(reqId);
+            return yield this.repo.getById(reqId, id);
         });
     }
-    create(req) {
+    create(req, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.repo.create(req);
+            return yield this.repo.create(req, id);
         });
     }
-    update(req) {
+    update(req, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.repo.update(req);
+            return yield this.repo.update(req, id);
         });
     }
-    delete(reqId) {
+    delete(reqId, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.repo.delete(reqId);
+            return yield this.repo.delete(reqId, id);
         });
     }
 }

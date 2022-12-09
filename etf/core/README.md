@@ -157,11 +157,18 @@ Version - 0.1.2
 
 - Addition of `get by id (get/:id)` API
 
+Version - 0.1.3
+
+- Added pagination to get API. Use `?page=<number>` or `?page=<number>&page_size=<number>`. Sample response will be like `{"response":[{...},{...}], "meta":{"pagination":{"page":1,"pageSize":10,"pageCount":1,"total":5}}}`. By default the page size is 10.
+- Added functionality to save user id in fields createdBy, updatedBy, deletedBy when using authorization in the base API's.
+- Added functionality to save createdBy, updatedBy, deletedBy when using base API's
+
 ### etf-cli
 
 Version - 0.1.5
 
 - Issue resolved for `etf -n` command execution
+
 ## Authors
 
 - [@AllPlayer](http://github.com/AllPlayer/)

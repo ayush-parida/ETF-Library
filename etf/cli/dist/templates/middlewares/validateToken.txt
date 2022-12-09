@@ -8,26 +8,30 @@ export class ValidateToken {
   private expiry: number = 600;
   private logger: Logger = new Logger();
 
-  public isValid(req: any): boolean {
+  public isValid(req: any): { status: boolean; user: number } {
     let res = true;
+    let id = -1;
     try {
       const _token = this.getToken(req);
       if (!_token) {
         res = false;
       } else {
         const decode: any = jwt.decode(_token);
-        console.log(decode);
         let date = new Date();
-        let currentEpoch = date.getTime() / 1000;
-        if (decode.exp > currentEpoch) {
-          return false;
-        } else {
+        if (decode) {
+          let currentEpoch = date.getTime() / 1000;
+          if (decode.exp > currentEpoch) {
+            return { status: false, user: -1 };
+          }
+          if (decode.id) {
+            id = decode.id;
+          }
         }
       }
     } catch (err) {
       res = false;
     }
-    return res;
+    return { status: res, user: id };
   }
   public getToken(req: any): string {
     if (
@@ -61,7 +65,7 @@ export class ValidateToken {
         };
       } else {
         const token = jwt.sign(
-          { username, password, user_type: res.user_type },
+          { username, password, user_type: res.user_type, id: res.id },
           this.secret,
           {
             expiresIn: this.expiry,

@@ -21,9 +21,10 @@ class Controller {
     get(info, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
-                if (this.validator.isValid(req)) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
                     this.logger.info(info, {});
-                    return yield this.service.get();
+                    return yield this.service.get(req, validate.id);
                 }
                 else {
                     return { error: ["Unauthorized"] };
@@ -31,16 +32,17 @@ class Controller {
             }
             else {
                 this.logger.info(info, {});
-                return yield this.service.get();
+                return yield this.service.get(req);
             }
         });
     }
     getById(info, id, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
-                if (this.validator.isValid(req)) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
                     this.logger.info(info, { id });
-                    return yield this.service.getById(id);
+                    return yield this.service.getById(id, validate.id);
                 }
                 else {
                     return { error: ["Unauthorized"] };
@@ -55,9 +57,10 @@ class Controller {
     create(info, data, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
-                if (this.validator.isValid(req)) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
                     this.logger.info(info, data);
-                    return yield this.service.create(data);
+                    return yield this.service.create(data, validate.id);
                 }
                 else {
                     return { error: ["Unauthorized"] };
@@ -72,9 +75,10 @@ class Controller {
     update(info, data, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
-                if (this.validator.isValid(req)) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
                     this.logger.info(info, data);
-                    return yield this.service.update(data);
+                    return yield this.service.update(data, validate.id);
                 }
                 else {
                     return { error: ["Unauthorized"] };
@@ -89,9 +93,10 @@ class Controller {
     delete(info, id, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
-                if (this.validator.isValid(req)) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
                     this.logger.info(info, { id });
-                    return yield this.service.delete(id);
+                    return yield this.service.delete(id, validate.id);
                 }
                 else {
                     return { error: ["Unauthorized"] };

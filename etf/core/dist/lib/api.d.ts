@@ -8,5 +8,5 @@ export declare class Api {
     controller: Controller;
     router: express.Router;
     constructor(model: any, db: any, validator: any);
-    routes(baseController: string, info: string, authentication: AuthenticationSelect, isActive: AuthenticationSelect): void;
+    routes(authentication: AuthenticationSelect, isActive: AuthenticationSelect): void;
 }

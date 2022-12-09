@@ -12,7 +12,7 @@ class Api {
         this.express.use(bodyParser.urlencoded({ extended: false }));
         this.controller = new controller_1.Controller(model, db, validator);
     }
-    routes(baseController, info, authentication, isActive) {
+    routes(authentication, isActive) {
         if (isActive.get)
             this.router.get(this.baseController, (req, res) => {
                 this.controller

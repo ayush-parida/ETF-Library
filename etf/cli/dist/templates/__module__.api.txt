@@ -9,8 +9,6 @@ export class __module__(pascalCase)Api extends Api {
     this.baseController = "";
     this.info = "__module__(pascalCase)";
     this.routes(
-      this.baseController,
-      this.info,
       {
         get: false,
         getId: false,

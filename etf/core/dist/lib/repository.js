@@ -16,13 +16,39 @@ class Repository {
         this.repo = db.sequelize.getRepository(model);
         this.logger = new logger_1.Logger();
     }
-    get() {
+    get(params, id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(this.repo);
-                const data = yield this.repo.findAll();
+                let obj = {
+                    offset: 0,
+                    limit: 10,
+                };
+                if (params.page) {
+                    if (params.page_size) {
+                        obj.offset = (parseInt(params.page) - 1) * parseInt(params.page_size);
+                        obj.limit = parseInt(params.page_size);
+                    }
+                    else {
+                        obj.offset = (parseInt(params.page) - 1) * 10;
+                        obj.limit = 10;
+                    }
+                }
+                const data = yield this.repo.findAndCountAll(obj);
                 this.logger.info("Data:::", data);
-                return data;
+                let res = {
+                    response: data.rows,
+                    meta: {
+                        pagination: {
+                            page: obj.offset + 1,
+                            pageSize: obj.limit,
+                            pageCount: data.count % obj.limit
+                                ? parseInt((data.count / obj.limit).toString()) + 1
+                                : parseInt((data.count / obj.limit).toString(), 10),
+                            total: data.count,
+                        },
+                    },
+                };
+                return res;
             }
             catch (err) {
                 this.logger.error("Error::" + err);
@@ -30,7 +56,7 @@ class Repository {
             }
         });
     }
-    getById(reqId) {
+    getById(reqId, id) {
         return __awaiter(this, void 0, void 0, function* () {
             let data = {};
             try {
@@ -47,10 +73,13 @@ class Repository {
             }
         });
     }
-    create(req) {
+    create(req, id) {
         return __awaiter(this, void 0, void 0, function* () {
             let data = {};
             try {
+                if (id) {
+                    req.createdBy = id;
+                }
                 req.createdAt = new Date().toISOString();
                 data = yield this.repo.create(req);
                 return Object.assign(Object.assign({}, data), { response: "Success" });
@@ -61,10 +90,13 @@ class Repository {
             }
         });
     }
-    update(req) {
+    update(req, id) {
         return __awaiter(this, void 0, void 0, function* () {
             let data = {};
             try {
+                if (id) {
+                    req.createdBy = id;
+                }
                 req.updatedAt = new Date().toISOString();
                 data = yield this.repo.update(Object.assign({}, req), {
                     where: {
@@ -79,11 +111,16 @@ class Repository {
             }
         });
     }
-    delete(reqId) {
+    delete(reqId, id) {
         return __awaiter(this, void 0, void 0, function* () {
             let data = {};
             try {
-                data = yield this.repo.destroy({
+                let _id = null;
+                if (id) {
+                    _id = id;
+                }
+                let deletedAt = new Date().toISOString();
+                data = yield this.repo.update(Object.assign({ is_active: false, deletedAt: deletedAt, deletedBy: _id }), {
                     where: {
                         id: reqId,
                     },
