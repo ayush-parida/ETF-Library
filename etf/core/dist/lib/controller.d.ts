@@ -1,37 +1,36 @@
+import { Count, DeleteMultiple, DeleteSingle, GetSpecific, PaginationResponse, PostMultiple, PostSingle, PutMultiple, PutSingle, ShortListing } from "./api.model";
 export declare class Controller {
-    private service;
-    private logger;
+    private repo;
     validator: any;
-    constructor(model: any, db: any, validator: any);
-    get(info: string, authentication: boolean, req: any): Promise<never[] | {
-        response: any;
-        meta: {
-            pagination: {
-                page: number;
-                pageSize: number;
-                pageCount: number;
-                total: any;
-            };
-        };
-    } | {
-        error: string[];
+    constructor(model: any, db: any, validator: any, struct: any);
+    getCount(authentication: boolean, req: any): Promise<Count | {
+        resp: Count;
     }>;
-    getById(info: string, id: number, authentication: boolean, req: any): Promise<{}>;
-    create(info: string, data: object, authentication: boolean, req: any): Promise<{
-        response: string;
-        err?: undefined;
-    } | {
-        err: unknown;
-    } | {
-        error: string[];
+    getById(id: any, authentication: boolean, req: any): Promise<GetSpecific | {
+        resp: GetSpecific;
     }>;
-    update(info: string, data: object, authentication: boolean, req: any): Promise<{
-        response: string;
-        err?: undefined;
-    } | {
-        err: unknown;
-    } | {
-        error: string[];
+    get(authentication: boolean, req: any): Promise<PaginationResponse | {
+        resp: PaginationResponse;
     }>;
-    delete(info: string, id: number, authentication: boolean, req: any): Promise<{}>;
+    create(data: object, authentication: boolean, req: any): Promise<PostSingle | {
+        resp: PostSingle;
+    }>;
+    createMultiple(data: object, authentication: boolean, req: any): Promise<PostMultiple | {
+        resp: PostMultiple;
+    }>;
+    update(data: object, authentication: boolean, req: any): Promise<PutSingle | {
+        resp: PutSingle;
+    }>;
+    updateMultiple(data: object, authentication: boolean, req: any): Promise<PutMultiple | {
+        resp: PutMultiple;
+    }>;
+    delete(id: number, authentication: boolean, req: any): Promise<DeleteSingle | {
+        resp: DeleteSingle;
+    }>;
+    deleteMultiple(id: number, authentication: boolean, req: any): Promise<DeleteSingle | {
+        resp: DeleteMultiple;
+    }>;
+    getKeyValuePairs(authentication: boolean, req: any): Promise<ShortListing | {
+        resp: ShortListing;
+    }>;
 }

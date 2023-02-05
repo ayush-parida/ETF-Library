@@ -1,173 +1,221 @@
 
 # Express Typescript Framework
 
-This is a framework built using Express and Typescript to provide an API server for PostgreSQL DB.
-
-The cli will generate a default module named user-management which will contain `customRoutes()` containing two custom API's `/login` and `refresh-token` which are used for authentication for the API's.
+This is a framework built using Express and Typescript to provide an API server for SQL types of DBs which can be used together with each other.
+This is a dynamic server to provide instant API's based on models.
+The focus of this is to provide all the following API's by execution of a command.
+The server primarily runs on NodeJS along with ExpressTS.
 
 The project is divided into 2 Libraries [etf-cli](https://www.npmjs.com/package/etf-cli) and [etf-core](https://www.npmjs.com/package/etf-core)
+
+All the apis will have a prefix of their collection / table names or as per user assigned name.
 
 ## Installation
 
 Install with npm
 
 ```bash
-  mkdir project_name
-  cd project_name
-  npm init
-  npm install etf-cli -g
-  npm install etf-cli
-  npm install etf-core
-  
+npm i etf-cli -g
+etf -n <projectName>
+cd <projectName>
+npm i
 ```
-Add the following scripts in your package.json
-```
-  "scripts": {
-    "start": "ts-node index.ts",
-    "dev": "./node_modules/nodemon/bin/nodemon.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-```
+Settings to be done before start of the server - 
 
-Add the following dependencies and devDependencies to package.json
-along with the already existing `etf-cli` and `etf-core`
-
-```bash
-  "dependencies": {
-    "body-parser": "^1.20.1",
-    "express": "^4.18.2",
-    "@types/jsonwebtoken": "^8.5.9",
-    "bcrypt-nodejs": "^0.0.3",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "jsonwebtoken": "^8.5.1",
-    "pg": "^8.8.0",
-    "pine": "^1.1.1",
-    "reflect-metadata": "^0.1.13",
-    "sequelize": "^6.25.8",
-    "sequelize-typescript": "^2.1.5",
-    "swagger-jsdoc": "^6.2.5",
-    "swagger-ui-express": "^4.6.0"
-  },
-  "devDependencies": {
-    "@types/bcrypt-nodejs": "^0.0.31",
-    "@types/cors": "^2.8.12",
-    "@types/express": "^4.17.14",
-    "dotenv": "^16.0.3",
-    "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.3",
-    "@types/swagger-jsdoc": "^6.0.1",
-    "@types/swagger-ui-express": "^4.1.3"
-  }
-```
-
-To Create the server setup run the following commands
-
-```bash
-  etf -n
-```
-
-Settings to be done to start the server - 
-
-- Configure your database connection in `db.config.ts`
+- Configure your database connection in `dbConfig.json`
 - Configure your `secret` and `refresh` keys in `/src/middlewares/validateToken.ts`.
 
-Run the Project
+Settings to be done while creating or updating models
 
-```bash
-  npm run dev
+- To change the fields or their properties you need to alter the <module>.struct.json file present within the "/src/modules/<module>"
+Note - The models.ts file is auto generated when the project is served so do not alter that.
+
+- model.ts files can be rebuilt by running `etf --make or etf -m` in the project root folder.
+
+## API's Provided
+- `/count (GET)` - Return count of entries for specific Table / Collection
+- `/:id (GET)` - Return Specific Entry based on `id` or `_id` of the item present in collection
+- `/ (GET)` - Return List of Entries which have `is_active=True`
+- `/ (POST)` - Create a new Entry
+- `/multiple (POST)` - Create multiple new entries for same collection
+- `/:id (PUT)` - Update a single entry based on `id` or `_id`
+- `/multiple (PUT)` - Update multiple entires for same collection
+- `/:id (DELETE)` - Delete single entry based on `id` or `_id`
+- `/ (DELETE)` - Delete multiple entries for same collection
+- `/short-listing (GET)` - Return list of `Key Value Pairs` for the collection with all the entries(PENDING)
+- `/upload` - Upload files respective to the Module and `id` or `_id` (PENDING)
+
+#### Notes
+- `is_active` will define if a entry is deleted or not
+- In real no entry is deleted from DB and only `is_active` is set to `False`
+- By default `/ (GET)` will return specific entries based on the pagination provided
+- The (objects for collection / columns for table / keys for the items) will be created inside the models file available for each (module / table / collection). Module in this case is the file structure created by the API Server
+
+
+### `/count (GET)`
+This will return a single object belonging to the following interface
+
+```ts
+interface Count{    
+    code: 200|400|401;
+    message: string;
+    count: number;
+}
+```
+### `/:id (GET)`
+This will return a single object belonging to the Model of the Collection where `is_active=True` inside an object belonging to following interface
+
+```ts
+interface GetSpecific{
+    code: 200|400|404|401;
+    message: string;
+    data: CollectionModel|{}
+}
 ```
 
-Note - 
+### `/ (GET)`
+This will return multiple objects of the collection in a pagination object belonging to the PaginationResponse interface
 
-- For each module there are currently 5 Base API's present
-```bash
-- get method - to get all entries (/)
-- get method - to get a single entry by id (/:id)
-- post method - to create a new entry (/, body)
-- put method - to update a single entry (/, body)
-- delete method - to delete a single entry (/:id)
+```ts
+export interface MetaColumn {
+  name: string;
+  type:
+    | "_id"
+    | "text"
+    | "number"
+    | "bool"
+    | "email"
+    | "url"
+    | "datetime"
+    | "select"
+    | "json"
+    | "file"
+    | "relation";
+  displayName?: string;
+  sorting: boolean;
+  sortingOrder: boolean;
+  visible: boolean;
+}
+
+interface PaginationResponse{
+    code: 200|400|401;
+    message: string;
+    data: {
+        meta: {
+            columns: MetaColumn[]
+            pagination: {
+                page: number;
+                pageSize: number;
+                pageCount: number;
+                total: number;
+            };
+        },
+        rows: CollectionModel[]
+    }
+}
 ```
 
-Creating New Modules
-```bash
-  etf -g module-name
+This API can also take the following request params | path params
+- nested=1|0;
+- page: number;
+- page_size: number;
+- order_by: ColumnName|ObjectKey;
+- order: 'ASC'|'DESC'
+
+Note - the keys visible in the response can be configured on the Server Side
+
+
+### `/ (POST)`
+
+This will create a single entry in the collection | table and will return response belonging to following interface
+
+```ts
+interface PostSingle{
+    code: 200|400|401;
+    message: string;
+    data: createdObject;
+}
 ```
 
-TODO after module generation
+### `/multiple (POST)`
 
-- Create Module structure inside `/modules/module-name.model.ts`
-- Import the `module-name.model.ts` class inside `db.config.ts` after `sequelize.addModels([User]);` in similar way to `User` where `User` will be replaced withe the `module-name.model.ts` class
-- Create a variable for `module-name => moduleName` inside `app.ts`
-- Initialize object on `module-name` from `module-name class` like `this.moduleName = new ModuleNameApi(this.db, new validateToken())` inside `constructor`
-- In `routes()` create an custom route for your module like `this.express.use(this.baseApiServerPath + "/moduleBasePath",this.moduleName.router);`
+This will create multiple entries belonging to same collection | table and will return response belonging to following interface
 
-Configuring the API's for module-name
+```ts
+interface PostMultiple{
+    code: 200|400|401;
+    message: string;
+    data: createdObject[];
+}
+```
 
-- `this.baseController` will add path after `/moduleBasePath` in the base api paths.
-- `this.info` is used by logger to show a log for the module.
-- Inside routes `{
-        get: false,
-        getId: false,
-        post: false,
-        put: false,
-        delete: false,
-      },` is passed. The first one is for wheather the module requires a JWT token for execution and the second is for weather the core API is active or not.
+### `/:id (PUT)`
 
-- The JWT token needs to be sent in the `header` as `authorization` in `Bearer token` format.
-## Roadmap
+This will update a single entry and will return response belonging to following interface
 
-The project is divided into 2 Libraries [etf-cli](https://www.npmjs.com/package/etf-cli) and [etf-core](https://www.npmjs.com/package/etf-core)
+```ts
+interface PutSingle{
+    code: 200|400|401;
+    message: string;
+    data: updatedObject;
+}
+```
 
-### etf-cli
+### `/multiple (PUT)`
 
-Version - 0.2.x
-
-- Implementation of DB Setup at `etf -n`
-- Implementation of Module setup for `authorization` and `isActive` of core-api on module generation via `etf -g`
-
-Version - 0.3.x
-
-- Implementation of swagger-ui
-- Implementation to pass Model name inside `module-name.model.ts`
-- Implementation of auto addition of `module` in `app.ts` and auto addition of `model` in `db.config.ts`
-
-### etf-core
-
-Version - 0.1.2 (released)
-
-- Addition of `get by id (get/:id)` API
-
-Version - 0.2.x
-
-- Addition of query params in API's
-
-Version - 0.3.x
-
-- Enhancement in `JWT` and `validateToken` functionality
-- Addition of `csrfTokens` middleware
+This will update entries belonging to same collection | table and will return response belonging to following interface
 
 
-## Resolved Issues & New Features
+```ts
+interface PutMultiple{
+    code: 200|400|401;
+    message: string;
+    data: updatedObject[];
+}
+```
 
-### etf-core
+### `/:id (DELETE)`
 
-Version - 0.1.2
+This will delete a single entry and will return response belonging to following interface
 
-- Addition of `get by id (get/:id)` API
+```ts
+interface DeleteSingle{
+    code: 200|400|401;
+    message: string;
+    data: deletedObjectId;
+}
+```
 
-Version - 0.1.3
+### `/multiple (DELETE)`
 
-- Added pagination to get API. Use `?page=<number>` or `?page=<number>&page_size=<number>`. Sample response will be like `{"response":[{...},{...}], "meta":{"pagination":{"page":1,"pageSize":10,"pageCount":1,"total":5}}}`. By default the page size is 10.
-- Added functionality to save user id in fields createdBy, updatedBy, deletedBy when using authorization in the base API's.
-- Added functionality to save createdBy, updatedBy, deletedBy when using base API's
+This will delete entries belonging to same collection | table and will return response belonging to following interface
 
-### etf-cli
 
-Version - 0.1.5
+```ts
+interface PutMultiple{
+    code: 200|400|401;
+    message: string;
+    data: deletedObjectId[];
+}
+```
 
-- Issue resolved for `etf -n` command execution
+### `/short-listing (GET)`
+
+Return list of `Key Value Pairs` for the collection with all the entries belonging to following interface
+
+
+```ts
+interface KeyValuePair{
+    name: string;
+    value: number;
+}
+interface ShortListing{
+    code: 200|400|401;
+    message: string;
+    data: KeyValuePair[];
+}
+```
+Note name and value inside KeyValuePair needs to be configured on server side.
 
 ## Authors
 

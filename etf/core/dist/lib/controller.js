@@ -10,101 +10,209 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Controller = void 0;
-const logger_1 = require("./logger");
-const service_1 = require("./service");
+const repository_1 = require("./repository");
 class Controller {
-    constructor(model, db, validator) {
-        this.service = new service_1.Service(model, db, validator);
-        this.logger = new logger_1.Logger();
+    constructor(model, db, validator, struct) {
+        this.repo = new repository_1.Repository(model, db, struct);
         this.validator = validator;
     }
-    get(info, authentication, req) {
+    getCount(authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
                 let validate = this.validator.isValid(req);
                 if (validate.status) {
-                    this.logger.info(info, {});
-                    return yield this.service.get(req, validate.id);
+                    return yield this.repo.getCount(validate.id);
                 }
                 else {
-                    return { error: ["Unauthorized"] };
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.count = 0;
+                    return { resp };
                 }
             }
             else {
-                this.logger.info(info, {});
-                return yield this.service.get(req);
+                return yield this.repo.getCount();
             }
         });
     }
-    getById(info, id, authentication, req) {
+    getById(id, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
                 let validate = this.validator.isValid(req);
                 if (validate.status) {
-                    this.logger.info(info, { id });
-                    return yield this.service.getById(id, validate.id);
+                    return yield this.repo.getById(id, validate.id);
                 }
                 else {
-                    return { error: ["Unauthorized"] };
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = null;
+                    return { resp };
                 }
             }
             else {
-                this.logger.info(info, { id });
-                return yield this.service.getById(id);
+                return yield this.repo.getById(id);
             }
         });
     }
-    create(info, data, authentication, req) {
+    get(authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
                 let validate = this.validator.isValid(req);
                 if (validate.status) {
-                    this.logger.info(info, data);
-                    return yield this.service.create(data, validate.id);
+                    return yield this.repo.get(req, validate.id);
                 }
                 else {
-                    return { error: ["Unauthorized"] };
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = undefined;
+                    return { resp };
                 }
             }
             else {
-                this.logger.info(info, data);
-                return yield this.service.create(data);
+                return yield this.repo.get(req);
             }
         });
     }
-    update(info, data, authentication, req) {
+    create(data, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
                 let validate = this.validator.isValid(req);
                 if (validate.status) {
-                    this.logger.info(info, data);
-                    return yield this.service.update(data, validate.id);
+                    return yield this.repo.create(data, validate.id);
                 }
                 else {
-                    return { error: ["Unauthorized"] };
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = undefined;
+                    return { resp };
                 }
             }
             else {
-                this.logger.info(info, data);
-                return yield this.service.update(data);
+                return yield this.repo.create(data);
             }
         });
     }
-    delete(info, id, authentication, req) {
+    createMultiple(data, authentication, req) {
         return __awaiter(this, void 0, void 0, function* () {
             if (authentication) {
                 let validate = this.validator.isValid(req);
                 if (validate.status) {
-                    this.logger.info(info, { id });
-                    return yield this.service.delete(id, validate.id);
+                    return yield this.repo.createMultiple(data, validate.id);
                 }
                 else {
-                    return { error: ["Unauthorized"] };
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = [];
+                    return { resp };
                 }
             }
             else {
-                this.logger.info(info, { id });
-                return yield this.service.delete(id);
+                return yield this.repo.createMultiple(data);
+            }
+        });
+    }
+    update(data, authentication, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (authentication) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
+                    return yield this.repo.update(data, validate.id);
+                }
+                else {
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = [];
+                    return { resp };
+                }
+            }
+            else {
+                return yield this.repo.update(data);
+            }
+        });
+    }
+    updateMultiple(data, authentication, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (authentication) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
+                    return yield this.repo.updateMultiple(data, validate.id);
+                }
+                else {
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = [];
+                    return { resp };
+                }
+            }
+            else {
+                return yield this.repo.updateMultiple(data);
+            }
+        });
+    }
+    delete(id, authentication, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (authentication) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
+                    return yield this.repo.delete(id, validate.id);
+                }
+                else {
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = [];
+                    return { resp };
+                }
+            }
+            else {
+                return yield this.repo.delete(id);
+            }
+        });
+    }
+    deleteMultiple(id, authentication, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (authentication) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
+                    return yield this.repo.deleteMultiple(id, validate.id);
+                }
+                else {
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = [];
+                    return { resp };
+                }
+            }
+            else {
+                return yield this.repo.delete(id);
+            }
+        });
+    }
+    getKeyValuePairs(authentication, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (authentication) {
+                let validate = this.validator.isValid(req);
+                if (validate.status) {
+                    return yield this.repo.getKeyValuePairs(validate.id);
+                }
+                else {
+                    let resp = {};
+                    resp.code = 401;
+                    resp.message = "Unauthorized";
+                    resp.data = [];
+                    return { resp };
+                }
+            }
+            else {
+                return yield this.repo.getKeyValuePairs();
             }
         });
     }

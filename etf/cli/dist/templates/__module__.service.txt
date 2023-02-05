@@ -1,9 +1,0 @@
-import { __module__(pascalCase) } from "./__module__(kebabCase).model";
-import { __module__(pascalCase)Repository } from "./__module__(kebabCase).repository";
-
-export class __module__(pascalCase)Service {
-  private __module__(camelCase)Repository: __module__(pascalCase)Repository;
-  constructor(db: any) {
-    this.__module__(camelCase)Repository = new __module__(pascalCase)Repository(db, __module__(pascalCase));
-  }
-}

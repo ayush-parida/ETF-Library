@@ -1,7 +1,0 @@
-import { Logger } from "etf-core";
-
-export class UserManagementLogger extends Logger {
-  constructor() {
-    super();
-  }
-}

@@ -1,6 +1,6 @@
 {
   "name": "etf-cli",
-  "version": "0.1.7",
+  "version": "0.1.10",
   "description": "CLI for ETF which is a Framework for API using Express, Typescript and PostgreSQL",
   "main": "dist/index.js",
   "bin": {
@@ -14,10 +14,14 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^9.4.1",
-    "figlet": "^1.5.2"
+    "figlet": "^1.5.2",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.28.0",
+    "sequelize-typescript": "^2.1.5"
   },
   "devDependencies": {
-    "@types/node": "^18.11.9",
+    "@types/node": "^18.11.18",
+    "@types/validator": "^13.7.11",
     "generate-template-files": "^3.2.1",
     "typescript": "^4.9.3"
   },

@@ -10,20 +10,109 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Repository = void 0;
-const logger_1 = require("./logger");
 class Repository {
-    constructor(model, db) {
+    constructor(model, db, _struct) {
+        this.includes = [];
+        this.model_includes = [];
+        this.struct = {};
+        this.attributes = [];
         this.repo = db.sequelize.getRepository(model);
-        this.logger = new logger_1.Logger();
+        this.struct = _struct;
+        _struct.fields.forEach((element) => {
+            if (element.belongsTo || element.hasMany) {
+                let _module_includes = {};
+                if (element.belongsTo) {
+                    _module_includes.displayKey =
+                        element.belongsToData.FOREIGN_COLUMN_NAME;
+                    _module_includes.reference = element.COLUMN_NAME;
+                    _module_includes.model = db.sequelize.getRepository(element.belongsToData.FOREIGN_MODEL);
+                }
+                if (element.hasMany) {
+                    _module_includes.displayKey =
+                        element.hasManyData.HAS_MANY_MODEL_PRIMARY_KEY;
+                    _module_includes.reference = element.hasManyData.HAS_MANY_NAME;
+                    _module_includes.model = db.sequelize.getRepository(element.hasManyData.HAS_MANY_MODEL);
+                }
+                this.model_includes.push(_module_includes);
+            }
+            this.includes.push(element.model);
+        });
+        this.attributes = _struct.keyValueAttribute;
+    }
+    getCount(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = {};
+            try {
+                data.count = yield this.repo.count({
+                    where: {
+                        is_active: true,
+                    },
+                });
+                data.code = 200;
+                data.message = "Success";
+            }
+            catch (err) {
+                data.code = 500;
+                data.message = err.message;
+                data.count = 0;
+            }
+            finally {
+                return data;
+            }
+        });
+    }
+    getById(reqId, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = {};
+            try {
+                data.data = yield this.repo.findOne({
+                    where: {
+                        id: reqId,
+                        is_active: true,
+                    },
+                });
+                data.code = 200;
+                data.message = "Success";
+            }
+            catch (err) {
+                data.code = 500;
+                data.message = err.message;
+                data.data = null;
+            }
+            finally {
+                return data;
+            }
+        });
     }
     get(params, id) {
         return __awaiter(this, void 0, void 0, function* () {
+            let out = {};
             try {
+                let order = ["id", "ASC"];
+                if (params.order_by) {
+                    order[0] = params.order_by;
+                }
+                if (params.order_by && params.order) {
+                    if (params.order == "ASC") {
+                        order[1] = params.order;
+                    }
+                    if (params.order == "DESC") {
+                        order[1] = params.order;
+                    }
+                }
                 let obj = {
+                    where: { is_active: true },
                     offset: 0,
                     limit: 10,
+                    distinct: true,
+                    include: this.includes,
+                    order: [order],
                 };
-                if (params.page) {
+                if (!this.includes || !params.nested) {
+                    delete obj.distinct;
+                    delete obj.include;
+                }
+                if (params.page && params.page > 0) {
                     if (params.page_size) {
                         obj.offset = (parseInt(params.page) - 1) * parseInt(params.page_size);
                         obj.limit = parseInt(params.page_size);
@@ -33,43 +122,62 @@ class Repository {
                         obj.limit = 10;
                     }
                 }
+                if (params.page == 0) {
+                    delete obj.limit;
+                }
+                let nested = [];
+                Object.keys(this.repo.associations).forEach((element) => {
+                    if (this.includes && params.nested == 1) {
+                        this.model_includes.forEach((element2) => {
+                            if (element == element2.reference) {
+                                let _keys = [];
+                                Object.keys(element2.model.getAttributes()).forEach((k) => {
+                                    let key = {};
+                                    key.name = k;
+                                    _keys.push(key);
+                                });
+                                let _nested = {
+                                    keys: _keys,
+                                    displayKey: element2.displayKey,
+                                    nested: Object.keys(element2.model.associations),
+                                    reference: element2.reference,
+                                };
+                                nested.push(_nested);
+                            }
+                        });
+                    }
+                });
                 const data = yield this.repo.findAndCountAll(obj);
-                this.logger.info("Data:::", data);
                 let res = {
-                    response: data.rows,
-                    meta: {
-                        pagination: {
-                            page: obj.offset + 1,
-                            pageSize: obj.limit,
-                            pageCount: data.count % obj.limit
-                                ? parseInt((data.count / obj.limit).toString()) + 1
-                                : parseInt((data.count / obj.limit).toString(), 10),
-                            total: data.count,
+                    code: 200,
+                    message: "Success",
+                    data: {
+                        rows: data.rows,
+                        meta: {
+                            columns: [],
+                            pagination: {
+                                page: obj.offset + 1,
+                                pageSize: params.page == 0 ? "all" : obj.limit,
+                                pageCount: params.page == 0
+                                    ? 1
+                                    : data.count % obj.limit
+                                        ? parseInt((data.count / obj.limit).toString()) + 1
+                                        : parseInt((data.count / obj.limit).toString(), 10),
+                                total: data.count,
+                            },
+                            nested: nested,
                         },
                     },
                 };
-                return res;
+                out = res;
             }
             catch (err) {
-                this.logger.error("Error::" + err);
-                return [];
+                out.code = 500;
+                out.message = err.message;
+                out.data = undefined;
             }
-        });
-    }
-    getById(reqId, id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let data = {};
-            try {
-                data = yield this.repo.findOne({
-                    where: {
-                        id: reqId,
-                    },
-                });
-                return data;
-            }
-            catch (err) {
-                this.logger.error("Error::" + err);
-                return { err };
+            finally {
+                return out;
             }
         });
     }
@@ -78,15 +186,44 @@ class Repository {
             let data = {};
             try {
                 if (id) {
-                    req.createdBy = id;
+                    req.created_by = id;
                 }
-                req.createdAt = new Date().toISOString();
-                data = yield this.repo.create(req);
-                return Object.assign(Object.assign({}, data), { response: "Success" });
+                req.is_active = true;
+                req.created_at = new Date().toISOString();
+                data.data = yield this.repo.create(req);
+                data.code = 201;
+                data.message = "Success";
             }
             catch (err) {
-                this.logger.error("Error::" + err);
-                return { err };
+                data.code = 500;
+                data.message = err.message;
+                data.data = null;
+            }
+            finally {
+                return data;
+            }
+        });
+    }
+    createMultiple(req, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = {};
+            try {
+                if (id) {
+                    req.created_by = id;
+                }
+                req.is_active = true;
+                req.created_at = new Date().toISOString();
+                data.data = yield this.repo.bulkCreate(req);
+                data.code = 201;
+                data.message = "Success";
+            }
+            catch (err) {
+                data.code = 500;
+                data.message = err.message;
+                data.data = [];
+            }
+            finally {
+                return data;
             }
         });
     }
@@ -95,19 +232,52 @@ class Repository {
             let data = {};
             try {
                 if (id) {
-                    req.createdBy = id;
+                    req.created_by = id;
                 }
-                req.updatedAt = new Date().toISOString();
-                data = yield this.repo.update(Object.assign({}, req), {
+                req.updated_at = new Date().toISOString();
+                data.data = yield this.repo.update(Object.assign({}, req), {
                     where: {
                         id: req.id,
                     },
                 });
-                return Object.assign(Object.assign({}, data), { response: "Success" });
+                data.code = 200;
+                data.message = "Success";
             }
             catch (err) {
-                this.logger.error("Error::" + err);
-                return { err };
+                data.code = 500;
+                data.message = err.message;
+                data.data = [];
+            }
+            finally {
+                return data;
+            }
+        });
+    }
+    updateMultiple(req, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = {};
+            try {
+                if (id) {
+                    req.created_by = id;
+                }
+                req.updated_at = new Date().toISOString();
+                req.forEach((element) => __awaiter(this, void 0, void 0, function* () {
+                    data.data.push(yield this.repo.update(Object.assign({}, element), {
+                        where: {
+                            id: req.id,
+                        },
+                    }));
+                }));
+                data.code = 200;
+                data.message = "Success";
+            }
+            catch (err) {
+                data.code = 500;
+                data.message = err.message;
+                data.data = [];
+            }
+            finally {
+                return data;
             }
         });
     }
@@ -119,18 +289,75 @@ class Repository {
                 if (id) {
                     _id = id;
                 }
-                let deletedAt = new Date().toISOString();
-                data = yield this.repo.update(Object.assign({ is_active: false, deletedAt: deletedAt, deletedBy: _id }), {
+                let deleted_at = new Date().toISOString();
+                data.data = yield this.repo.update(Object.assign({ is_active: false, deleted_at: deleted_at, deleted_by: _id }), {
                     where: {
                         id: reqId,
                     },
                 });
-                return Object.assign(Object.assign({}, data), { response: "Success" });
+                data.code = 200;
+                data.message = "Success";
             }
             catch (err) {
-                this.logger.error("Error::" + err);
+                data.code = 500;
+                data.message = err.message;
+                data.data = [];
             }
             return data;
+        });
+    }
+    deleteMultiple(reqId, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = {};
+            try {
+                let _id = null;
+                if (id) {
+                    _id = id;
+                }
+                let deleted_at = new Date().toISOString();
+                reqId.split(",").forEach((element) => __awaiter(this, void 0, void 0, function* () {
+                    data.data.push(yield this.repo.update(Object.assign({
+                        is_active: false,
+                        deleted_at: deleted_at,
+                        deleted_by: _id,
+                    }), {
+                        where: {
+                            id: element,
+                        },
+                    }));
+                }));
+                data.code = 200;
+                data.message = "Success";
+            }
+            catch (err) {
+                data.code = 500;
+                data.message = err.message;
+                data.data = [];
+            }
+            return data;
+        });
+    }
+    getKeyValuePairs(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = {};
+            try {
+                data.data = yield this.repo.findAndCountAll({
+                    attributes: this.attributes,
+                    where: {
+                        is_active: true,
+                    },
+                });
+                data.code = 200;
+                data.message = "Success";
+            }
+            catch (err) {
+                data.code = 500;
+                data.message = err.message;
+                data.data = [];
+            }
+            finally {
+                return data;
+            }
         });
     }
 }

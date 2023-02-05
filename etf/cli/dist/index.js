@@ -9,6 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+const structTemplates_1 = require("./structTemplates");
+const structToModelGenerator_1 = require("./structToModelGenerator");
+const promises_1 = require("fs/promises");
 const figlet = require("figlet");
 const { Command } = require("commander");
 const fs = require("fs");
@@ -18,10 +22,11 @@ const { generateTemplateFilesBatch } = require("generate-template-files");
 const version = require("../package.json").version;
 program
     .version(version)
-    .description("Express TS Framework for Creating Servers")
+    .description("Express TS Framework")
     .option("-l, --ls", "List All API Modules")
-    .option("-n, --new", "Create New Express TS Server")
+    .option("-n, --new <value>", "Create New Server")
     .option("-g, --generate <value>", "Create a API Module")
+    .option("-m, --make", "Create Models from structs")
     .parse(process.argv);
 const options = program.opts();
 //list modules
@@ -39,24 +44,12 @@ function listModules(filepath) {
                 };
             }));
             const detailedFiles = yield Promise.all(detailedFilesPromises);
-            console.table(detailedFiles);
+            return detailedFiles;
         }
         catch (err) {
             console.error("No modules found. Ensure this is a ETF Project", err);
         }
     });
-}
-//create a directory
-function createDir(filepath) {
-    if (!fs.existsSync(filepath)) {
-        fs.mkdirSync(filepath);
-        console.log("The directory has been created successfully");
-    }
-}
-//create a file
-function createFile(filepath) {
-    fs.openSync(filepath, "w");
-    console.log("An empty file has been created");
 }
 // cli checks
 if (!process.argv.slice(2).length) {
@@ -66,7 +59,9 @@ if (!process.argv.slice(2).length) {
 }
 if (options.ls) {
     try {
-        listModules(process.cwd() + "/src/modules");
+        listModules(process.cwd() + "/src/modules").then((res) => {
+            console.table(res);
+        });
     }
     catch (err) {
         console.log(err);
@@ -74,271 +69,121 @@ if (options.ls) {
     }
 }
 if (options.new) {
-    generateProject();
+    generateProject(options.new);
+}
+function generateProject(projectName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!fs.existsSync(projectName)) {
+            fs.mkdirSync(projectName);
+            let dirName = process.cwd() + "/" + projectName;
+            generateTemplateFilesBatch([
+                fileObjectGenerator("index.ts", "", "", dirName),
+                fileObjectGenerator("nodemon.json", "", "", dirName),
+                fileObjectGenerator("package.json", "", "", dirName),
+                fileObjectGenerator("tsconfig.json", "", "", dirName),
+                fileObjectGenerator("cors.ts", "", "src/middlewares", dirName),
+                fileObjectGenerator("validateToken.ts", "", "src/middlewares", dirName),
+                fileObjectGenerator("app.ts", "", "src", dirName),
+                fileObjectGenerator("serverModels.ts", "", "src", dirName),
+                fileObjectGenerator("db_config.json", "", "src", dirName),
+                fileObjectGenerator("dbConfig.ts", "", "src", dirName),
+            ]);
+            generateModule("user", dirName + "/src");
+        }
+        else {
+            console.error('Folder with name "' + projectName + '" already exists');
+        }
+    });
 }
 if (options.generate) {
-    //   createDir(path.resolve(__dirname, options.generate));
-    generateModule(options.generate);
-    // files.forEach((element) => {
-    //   createFile(
-    //     path.resolve(
-    //       __dirname + "/../../modules/" + options.generate,
-    //       options.generate + "." + element + ".ts"
-    //     )
-    //   );
-    // });
+    generateModule(options.generate, process.cwd() + "/src");
 }
-function generateProject() {
-    let name = "";
-    generateTemplateFilesBatch([
-        {
-            option: "API",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/user-management/user-management.api.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/src/modules/user-management/user-management.api.ts",
-            },
-        },
-        {
-            option: "Controller",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname +
-                    "/templates/user-management/user-management.controller.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/user-management/user-management.controller.ts",
-            },
-        },
-        {
-            option: "Logger",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/user-management/user-management.logger.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/user-management/user-management.logger.ts",
-            },
-        },
-        {
-            option: "Model",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/user-management/user-management.model.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/user-management/user-management.model.ts",
-            },
-        },
-        {
-            option: "Repository",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname +
-                    "/templates/user-management/user-management.repository.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/user-management/user-management.repository.ts",
-            },
-        },
-        {
-            option: "Service",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/user-management/user-management.service.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/user-management/user-management.service.ts",
-            },
-        },
-        {
-            option: "Cors",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/middlewares/cors.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/src/middlewares/cors.ts",
-            },
-        },
-        {
-            option: "csrfToken",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/middlewares/csrfToken.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/src/middlewares/csrfToken.ts",
-            },
-        },
-        {
-            option: "Cors",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/middlewares/validateToken.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/src/middlewares/validateToken.ts",
-            },
-        },
-        {
-            option: "DB-Config",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/db.config.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/db.config.ts",
-            },
-        },
-        {
-            option: "App",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/app.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/app.ts",
-            },
-        },
-        {
-            option: "Index",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/index.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/index.ts",
-            },
-        },
-        {
-            option: "tsconfig",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/tsconfig.json",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/tsconfig.json",
-            },
-        },
-        {
-            option: "nodemon",
-            defaultCase: "(kebabCase)",
-            entry: {
-                folderPath: __dirname + "/templates/nodemon.json",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() + "/nodemon.json",
-            },
-        },
-    ]);
+function generateModule(moduleName, dirPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let dirName = dirPath;
+        let modulePath = "/modules/";
+        let files = yield moduleGenerator(moduleName, modulePath, dirName);
+        yield generateTemplateFilesBatch(files);
+        let structPath = dirName + modulePath + moduleName + "/" + moduleName + ".struct.json";
+        const file = yield (0, promises_1.readFile)(structPath, "utf8");
+        structToModel(JSON.parse(file), dirName);
+    });
 }
-function generateModule(name) {
-    generateTemplateFilesBatch([
-        {
-            option: "API",
-            defaultCase: "(pascalCase)",
-            entry: {
-                folderPath: __dirname + "/templates/__module__.api.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/__module__(kebabCase)/__module__(kebabCase).api.ts",
-                pathAndFileNameDefaultCase: "(pascalCase)",
-            },
-        },
-        {
-            option: "Controller",
-            defaultCase: "(pascalCase)",
-            entry: {
-                folderPath: __dirname + "/templates/__module__.controller.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/__module__(kebabCase)/__module__(kebabCase).controller.ts",
-                pathAndFileNameDefaultCase: "(pascalCase)",
-            },
-        },
-        {
-            option: "Model",
-            defaultCase: "(pascalCase)",
-            entry: {
-                folderPath: __dirname + "/templates/__module__.model.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/__module__(kebabCase)/__module__(kebabCase).model.ts",
-                pathAndFileNameDefaultCase: "(pascalCase)",
-            },
-        },
-        {
-            option: "Service",
-            defaultCase: "(pascalCase)",
-            entry: {
-                folderPath: __dirname + "/templates/__module__.service.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/__module__(kebabCase)/__module__(kebabCase).service.ts",
-                pathAndFileNameDefaultCase: "(pascalCase)",
-            },
-        },
-        {
-            option: "Logger",
-            defaultCase: "(pascalCase)",
-            entry: {
-                folderPath: __dirname + "/templates/__module__.logger.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/__module__(kebabCase)/__module__(kebabCase).logger.ts",
-                pathAndFileNameDefaultCase: "(pascalCase)",
-            },
-        },
-        {
-            option: "Repository",
-            defaultCase: "(pascalCase)",
-            entry: {
-                folderPath: __dirname + "/templates/__module__.repository.txt",
-            },
-            dynamicReplacers: [{ slot: "__module__", slotValue: name }],
-            output: {
-                path: process.cwd() +
-                    "/src/modules/__module__(kebabCase)/__module__(kebabCase).repository.ts",
-                pathAndFileNameDefaultCase: "(pascalCase)",
-            },
-        },
-    ]);
+if (options.make) {
+    makeModels(process.cwd());
 }
-//   createDir(path.resolve(__dirname, options.mkdir));
-//   createFile(path.resolve(__dirname, options.touch));
-// const moduleTemplate = {
-//     api: n => ''
-// }
+function fileObjectGenerator(fileName, name, path, dirName) {
+    if (path) {
+        path = path + "/";
+    }
+    let file = {
+        option: fileName,
+        defaultCase: "(kebabCase)",
+        entry: {
+            folderPath: __dirname + "/templates/" + fileName.split(".")[0] + ".txt",
+        },
+        dynamicReplacers: [{ slot: "__module__", slotValue: name }],
+        output: {
+            path: dirName + "/" + path + fileName,
+        },
+    };
+    return file;
+}
+function moduleGenerator(name, path, dirName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const files = [
+            "*.api.ts",
+            "*.controller.ts",
+            "*.repository.ts",
+            "*.struct.json",
+        ];
+        let res = [];
+        files.forEach((element) => {
+            let file = {
+                option: element.split(".")[1],
+                defaultCase: "(pascalCase)",
+                entry: {
+                    folderPath: __dirname + "/templates/__module__." + element.split(".")[1] + ".txt",
+                },
+                dynamicReplacers: [{ slot: "__module__", slotValue: name }],
+                output: {
+                    path: dirName +
+                        path +
+                        "__module__(kebabCase)/__module__(kebabCase)." +
+                        element.split(".")[1] +
+                        "." +
+                        element.split(".")[2],
+                    pathAndFileNameDefaultCase: "(pascalCase)",
+                },
+            };
+            res.push(file);
+        });
+        return res;
+    });
+}
+function structToModel(model, dirName) {
+    let templates = new structTemplates_1.StructTemplates();
+    let generator = new structToModelGenerator_1.StructToModelGenerator(templates.templates, model);
+    let fileData = generator.generateModel();
+    generator.syncWriteFile(dirName + model.filePath + model.fileName, fileData);
+}
+function makeModels(dirName) {
+    let path = dirName + "/src/modules/";
+    try {
+        listModules(path).then((res) => {
+            res.forEach((element) => __awaiter(this, void 0, void 0, function* () {
+                let file = yield (0, promises_1.readFile)(path +
+                    element["Module Name"] +
+                    "/" +
+                    element["Module Name"] +
+                    ".struct.json", "utf8");
+                structToModel(JSON.parse(file), dirName + "/src");
+            }));
+        });
+    }
+    catch (err) {
+        console.log(err);
+        console.log("Make Sure this is an ETF project");
+    }
+}
 //# sourceMappingURL=index.js.map

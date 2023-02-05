@@ -1,42 +1,25 @@
-import { Logger } from "./logger";
-interface BaseModel {
-    id?: number;
-    createdBy?: string;
-    updatedBy?: string;
-    deletedBy?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    deletedAt?: string;
-    version?: number;
+import { Count, DeleteMultiple, DeleteSingle, GetSpecific, PaginationResponse, PostMultiple, PostSingle, PutMultiple, PutSingle, ShortListing } from "./api.model";
+interface Nested2 {
+    displayKey: string;
+    model: any;
+    reference: string;
 }
 export declare class Repository {
-    logger: Logger;
     repo: any;
-    constructor(model: any, db: any);
-    get(params: any, id: any): Promise<{
-        response: any;
-        meta: {
-            pagination: {
-                page: number;
-                pageSize: number;
-                pageCount: number;
-                total: any;
-            };
-        };
-    } | never[]>;
-    getById(reqId: number, id: any): Promise<{}>;
-    create(req: BaseModel, id: any): Promise<{
-        response: string;
-        err?: undefined;
-    } | {
-        err: unknown;
-    }>;
-    update(req: BaseModel, id: any): Promise<{
-        response: string;
-        err?: undefined;
-    } | {
-        err: unknown;
-    }>;
-    delete(reqId: number, id: any): Promise<{}>;
+    includes: string[];
+    model_includes: Nested2[];
+    struct: any;
+    attributes: string[];
+    constructor(model: any, db: any, _struct: any);
+    getCount(id?: any): Promise<Count>;
+    getById(reqId: any, id?: any): Promise<GetSpecific>;
+    get(params: any, id?: any): Promise<PaginationResponse>;
+    create(req: any, id?: any): Promise<PostSingle>;
+    createMultiple(req: any, id?: any): Promise<PostMultiple>;
+    update(req: any, id?: any): Promise<PutSingle>;
+    updateMultiple(req: any, id?: any): Promise<PutMultiple>;
+    delete(reqId: any, id?: any): Promise<DeleteSingle>;
+    deleteMultiple(reqId: any, id?: any): Promise<DeleteMultiple>;
+    getKeyValuePairs(id?: any): Promise<ShortListing>;
 }
 export {};
