@@ -26,16 +26,17 @@ class Repository {
                         element.belongsToData.FOREIGN_COLUMN_NAME;
                     _module_includes.reference = element.COLUMN_NAME;
                     _module_includes.model = db.sequelize.getRepository(element.belongsToData.FOREIGN_MODEL);
+                    this.includes.push(element.belongsToData.FOREIGN_MODEL);
                 }
                 if (element.hasMany) {
                     _module_includes.displayKey =
                         element.hasManyData.HAS_MANY_MODEL_PRIMARY_KEY;
                     _module_includes.reference = element.hasManyData.HAS_MANY_NAME;
                     _module_includes.model = db.sequelize.getRepository(element.hasManyData.HAS_MANY_MODEL);
+                    this.includes.push(element.hasManyData.HAS_MANY_MODEL);
                 }
                 this.model_includes.push(_module_includes);
             }
-            this.includes.push(element.model);
         });
         this.attributes = _struct.keyValueAttribute;
     }
