@@ -1,0 +1,82 @@
+import * as bodyParser from "body-parser";
+import * as express from "express";
+import "dotenv/config";
+import cors from "./middlewares/cors";
+import { ValidateToken } from "./middlewares/validateToken";
+import { DbConfigs } from "./dbConfig";
+import { ServerModels } from "./serverModels";
+import { ServerBasePaths } from "./serverBasePaths";
+
+export class App {
+  express: express.Application;
+  db: any;
+  userManagement: any;
+  swaggerOptions = {
+    explorer: true,
+  };
+  serverModels: ServerModels = new ServerModels();
+  serverBasePaths: ServerBasePaths = new ServerBasePaths();
+  baseApiServerPaths: string[] = this.serverBasePaths.baseApiServerPaths;
+  models: any[] = this.serverModels.models;
+
+  validateToken: ValidateToken = new ValidateToken();
+  dbs: DbConfigs = new DbConfigs();
+  constructor() {
+    let dbModels: { configName: string; models: any[] }[] = [];
+    this.dbs.dbConfs.forEach((element: any) => {
+      dbModels.push({ configName: element.configName, models: [] });
+    });
+    this.models.forEach((model) => {
+      dbModels.forEach((dbModel) => {
+        if (dbModel.configName == model.configName) {
+          dbModel.models.push(model.model);
+        }
+      });
+    });
+    this.db = this.dbs.connect(dbModels);
+    this.db.forEach((dbConnection: any) => {
+      dbConnection.db.sequelize.sync({ force: false, alter: true }).then(() => {
+        console.log("DROP and RE-SYNC db.");
+      });
+      this.models.forEach((model) => {
+        if (model.configName == dbConnection.configName) {
+          model.router = new model.api(dbConnection.db, this.validateToken);
+        }
+      });
+    });
+    this.express = express();
+    this.middleware();
+    this.routes();
+  }
+  private middleware(): void {
+    this.express.use(bodyParser.json());
+    this.express.use(bodyParser.urlencoded({ extended: false }));
+    this.express.use(cors.mount());
+  }
+  private routes(): void {
+    this.models.forEach((element) => {
+      this.baseApiServerPaths.forEach((path) => {
+        if (path == element.baseApiPath) {
+          this.express.use(
+            element.baseApiPath + element.modulePath,
+            element.router.router
+          );
+        }
+      });
+    });
+
+    this.express.use("/media", express.static("public"));
+    this.baseApiServerPaths.forEach((element) => {
+      this.express.get(element + "/", (req, res, next) => {
+        res.send({ code: 200, message: "Server Running!!", data: null });
+      });
+    });
+
+    // handle undefined routes
+    this.express.use("*", (req, res, next) => {
+      res.send({ code: 400, message: "Invalid / Bad Request", data: null });
+    });
+  }
+}
+
+export default new App().express;

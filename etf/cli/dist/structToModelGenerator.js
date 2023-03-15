@@ -66,7 +66,7 @@ class StructToModelGenerator {
                         options.push(this.templates.unique.replace("%UNIQUE%", "true"));
                     }
                     if (field.REQUIRED) {
-                        options.push(this.templates.required.replace("%REQUIRED%", "true"));
+                        options.push(this.templates.required.replace("%REQUIRED%", "false"));
                     }
                     if (field.DEFAULT_VALUE) {
                         options.push(this.templates.default.replace("%DEFAULT_VALUE%", field.DEFAULT_VALUE));

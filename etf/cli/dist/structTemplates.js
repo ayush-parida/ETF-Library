@@ -29,7 +29,10 @@ class StructTemplates {
     updated_at?: Date;
 
     @DeletedAt
-    deleted_at?: Date;\n`,
+    deleted_at?: Date;
+    
+    @Column({defaultValue: true})
+    is_active?: boolean;\n`,
             isUrl: "\t@IsUrl\n",
             isDate: "\t@IsDate\n",
             isBefore: "\t@IsBefore('%BEFORE_YYYY_MM_DD%')\n",

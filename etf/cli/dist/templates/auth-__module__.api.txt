@@ -1,0 +1,60 @@
+import { __module__(pascalCase)Controller } from "./__module__(kebabCase).controller";
+import { __module__(pascalCase) } from "./__module__(kebabCase).model";
+import { Api } from "etf-core";
+import { Request, Response } from "express";
+const model = require("./__module__(kebabCase).struct.json");
+
+export class __module__(pascalCase)Api extends Api {
+  __module__(camelCase)Controller: __module__(pascalCase)Controller;
+  constructor(db: any, validator: any) {
+    super(__module__(pascalCase), db, validator, model);
+    this.baseController = "";
+    this.routes(
+      {
+        count: false,
+        getId: false,
+        get: false,
+        post: false,
+        multiPost: false,
+        put: false,
+        multiPut: false,
+        delete: false,
+        multiDelete: false,
+        shortListing: false,
+      },
+      {
+        count: true,
+        getId: true,
+        get: true,
+        post: true,
+        multiPost: true,
+        put: true,
+        multiPut: true,
+        delete: true,
+        multiDelete: true,
+        shortListing: true,
+      }
+    );
+    this.__module__(camelCase)Controller = new __module__(pascalCase)Controller(db, model);
+    this.customRoutes();
+  }
+
+  customRoutes(): void {
+    this.express.post("/register", (req: Request, res: Response) => {
+      this.__module__(camelCase)Controller.register(req.body).then((data) => {
+        res.json(data);
+      });
+    });
+
+    this.express.post("/login", (req: Request, res: Response) => {
+      this.__module__(camelCase)Controller.login(req.body).then((data) => {
+        res.json(data);
+      });
+    });
+    this.express.post("/refresh-token", (req: Request, res: Response) => {
+      this.__module__(camelCase)Controller.refreshToken(req.body).then((data) => {
+        res.json(data);
+      });
+    });
+  }
+}

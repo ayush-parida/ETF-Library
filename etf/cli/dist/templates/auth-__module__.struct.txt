@@ -1,0 +1,149 @@
+{
+  "TABLE_NAME": "__module__(kebabCase)s",
+  "CLASS_NAME": "__module__(pascalCase)",
+  "fileName": "__module__(kebabCase).model.ts",
+  "filePath": "/modules/__module__(kebabCase)/",
+  "keyValueAttribute": ["id", "_id"],
+  "baseApiPath": "/api",
+  "modulePath": "/__module__(kebabCase)s",
+  "api": "__module__(pascalCase)Api",
+  "apiPath": "./modules/__module__(kebabCase)/__module__(kebabCase).api",
+  "model": "__module__(pascalCase)",
+  "modelPath": "./modules/__module__(kebabCase)/__module__(kebabCase).model",
+  "configName": "server_one",
+  "configType": "auth",
+  "fields": [
+    {
+      "column": true,
+      "primaryKey": true,
+      "autoIncrement": true,
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "number",
+      "belongsTo": false,
+      "belongsToData": {
+        "FOREIGN_MODEL": "",
+        "FOREIGN_COLUMN_NAME": "",
+        "BELONGS_TO_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "hasMany": false,
+      "hasManyData": {
+        "HAS_MANY_MODEL": "",
+        "HAS_MANY_MODEL_PRIMARY_KEY": "",
+        "HAS_MANY_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "UNIQUE": true,
+      "REQUIRED": true,
+      "DEFAULT_VALUE": "",
+      "COMMENT": "Primary Key",
+      "IS_DATE": false,
+      "IS_URL": false,
+      "BEFORE_YYYY_MM_DD": "",
+      "AFTER_YYYY_MM_DD": "",
+      "REGEX": "",
+      "REGEX_NAME": "",
+      "MIN": 0,
+      "MAX": 0
+    },
+        {
+      "column": true,
+      "primaryKey": false,
+      "autoIncrement": false,
+      "COLUMN_NAME": "deleted_by",
+      "COLUMN_TYPE": "number",
+      "belongsTo": false,
+      "belongsToData": {
+        "FOREIGN_MODEL": "",
+        "FOREIGN_COLUMN_NAME": "",
+        "BELONGS_TO_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "hasMany": false,
+      "hasManyData": {
+        "HAS_MANY_MODEL": "",
+        "HAS_MANY_MODEL_PRIMARY_KEY": "",
+        "HAS_MANY_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "UNIQUE": false,
+      "REQUIRED": false,
+      "DEFAULT_VALUE": null,
+      "COMMENT": "Deleted By User ID",
+      "IS_DATE": false,
+      "IS_URL": false,
+      "BEFORE_YYYY_MM_DD": "",
+      "AFTER_YYYY_MM_DD": "",
+      "REGEX": "",
+      "REGEX_NAME": "",
+      "MIN": 0,
+      "MAX": 0
+    },
+    {
+      "column": true,
+      "primaryKey": false,
+      "autoIncrement": false,
+      "COLUMN_NAME": "updated_by",
+      "COLUMN_TYPE": "number",
+      "belongsTo": false,
+      "belongsToData": {
+        "FOREIGN_MODEL": "",
+        "FOREIGN_COLUMN_NAME": "",
+        "BELONGS_TO_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "hasMany": false,
+      "hasManyData": {
+        "HAS_MANY_MODEL": "",
+        "HAS_MANY_MODEL_PRIMARY_KEY": "",
+        "HAS_MANY_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "UNIQUE": false,
+      "REQUIRED": false,
+      "DEFAULT_VALUE": null,
+      "COMMENT": "Updated By User ID",
+      "IS_DATE": false,
+      "IS_URL": false,
+      "BEFORE_YYYY_MM_DD": "",
+      "AFTER_YYYY_MM_DD": "",
+      "REGEX": "",
+      "REGEX_NAME": "",
+      "MIN": 0,
+      "MAX": 0
+    },
+    {
+      "column": true,
+      "primaryKey": false,
+      "autoIncrement": false,
+      "COLUMN_NAME": "created_by",
+      "COLUMN_TYPE": "number",
+      "belongsTo": false,
+      "belongsToData": {
+        "FOREIGN_MODEL": "",
+        "FOREIGN_COLUMN_NAME": "",
+        "BELONGS_TO_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "hasMany": false,
+      "hasManyData": {
+        "HAS_MANY_MODEL": "",
+        "HAS_MANY_MODEL_PRIMARY_KEY": "",
+        "HAS_MANY_NAME": "",
+        "IMPORTPATH": ""
+      },
+      "UNIQUE": false,
+      "REQUIRED": false,
+      "DEFAULT_VALUE": null,
+      "COMMENT": "Created By User ID",
+      "IS_DATE": false,
+      "IS_URL": false,
+      "BEFORE_YYYY_MM_DD": "",
+      "AFTER_YYYY_MM_DD": "",
+      "REGEX": "",
+      "REGEX_NAME": "",
+      "MIN": 0,
+      "MAX": 0
+    }
+  ]
+}

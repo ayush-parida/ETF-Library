@@ -1,0 +1,22 @@
+import * as cors from "cors";
+
+class CORS {
+  allowedOrigins = [
+    "http://localhost" + process.env.PORT?.toString() || "3070",
+    "http://localhost:4200",
+  ];
+  constructor() {
+  }
+  public mount() {
+    console.log("Booting the 'CORS' middleware...", {});
+
+    const options: cors.CorsOptions = {
+      origin: this.allowedOrigins,
+      optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+    };
+
+    return cors(options);
+  }
+}
+
+export default new CORS();

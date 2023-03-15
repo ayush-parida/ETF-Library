@@ -1,0 +1,8 @@
+import { Repository } from "etf-core";
+
+export class __module__(pascalCase)Repository extends Repository {
+
+  constructor(db: any, model: any, struct: any) {
+    super(model, db, struct);
+  }
+}

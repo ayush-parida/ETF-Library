@@ -1,0 +1,15 @@
+import { UserApi } from "./modules/user/user.api";
+import { User } from "./modules/user/user.model";
+
+export class ServerModels {
+  public models: any[] = [
+    {
+      baseApiPath: "/api",
+      modulePath: "/users",
+      api: UserApi,
+      model: User,
+      configName: "server_two",
+      router: undefined,
+    },
+  ];
+}

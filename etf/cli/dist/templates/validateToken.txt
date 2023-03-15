@@ -1,0 +1,58 @@
+import * as jwt from "jsonwebtoken";
+
+export class ValidateToken {
+  public loginSecret: string = "234";
+  public refreshSecret: string = "423";
+  public sessionDuration: number = 6000;
+  public passwordHashKey: number = 39;
+
+  public isValid(req: any): { status: boolean; user: number } {
+    let res = true;
+    let id = -1;
+    try {
+      const _token = this.getToken(req);
+      if (!_token) {
+        res = false;
+      } else {
+        jwt.verify(_token, this.loginSecret, (err, decode: any) => {
+          console.log(_token);
+          console.log(decode);
+          console.log(err);
+          let date = new Date();
+          if (decode) {
+            try {
+              let currentEpoch = date.getTime() / 1000;
+              if (decode.exp < currentEpoch) {
+                res = false;
+                id = -1;
+                return { status: false, user: -1 };
+              }
+              if (decode.id) {
+                id = decode.id;
+              }
+            } catch (err) {}
+          } else if (err) {
+            res = false;
+            id = -1;
+            return { status: false, user: -1 };
+          }
+        });
+      }
+    } catch (err) {
+      res = false;
+    }
+    return { status: res, user: id };
+  }
+  public getToken(req: any): string {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.split(" ")[0] === "Bearer"
+    ) {
+      return req.headers.authorization.split(" ")[1];
+    } else if (req.query && req.query.token) {
+      return req.query.token;
+    }
+
+    return "";
+  }
+}

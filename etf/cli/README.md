@@ -16,7 +16,7 @@ Install with npm
 
 ```bash
 npm i etf-cli -g
-etf -n <projectName>
+etf new <projectName>
 cd <projectName>
 npm i
 ```
@@ -216,6 +216,24 @@ interface ShortListing{
 }
 ```
 Note name and value inside KeyValuePair needs to be configured on server side.
+
+## New Modules
+
+To Create new Modules use the command
+```
+etf generate <module-name>
+```
+It will ask for a Table Type
+If you want to make it normal table use 'Base'
+If you want to provide authentication using the table use 'Auth'
+
+If you select Auth it will provide you additional API's
+
+`/module-name/register`
+
+`/module-name/login`
+
+`/module-name/refresh-token`
 
 ## Authors
 

@@ -1,6 +1,6 @@
 {
   "name": "etf-cli",
-  "version": "0.1.10",
+  "version": "0.1.15",
   "description": "CLI for ETF which is a Framework for API using Express, Typescript and PostgreSQL",
   "main": "dist/index.js",
   "bin": {
@@ -15,6 +15,7 @@
   "dependencies": {
     "commander": "^9.4.1",
     "figlet": "^1.5.2",
+    "readline": "^1.3.0",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.28.0",
     "sequelize-typescript": "^2.1.5"

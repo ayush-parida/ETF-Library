@@ -1,0 +1,181 @@
+import { Repository } from "etf-core";
+import * as jwt from "jsonwebtoken";
+import * as bcrypt from "bcrypt-nodejs";
+import { ValidateToken } from "../../middlewares/validateToken";
+
+export class __module__(pascalCase)Repository extends Repository {
+  validateToken = new ValidateToken();
+  private passwordHashKey: number = this.validateToken.passwordHashKey;
+  private loginSecret: string = this.validateToken.loginSecret;
+  private refreshSecret: string = this.validateToken.refreshSecret;
+  private sessionDuration: number = this.validateToken.sessionDuration;
+
+  constructor(db: any, model: any, struct: any) {
+    super(model, db, struct);
+  }
+  async register(req: any) {
+    if (!req.username || !req.password) {
+      return {
+        data: {},
+        code: 500,
+        message: "Username and Password are required",
+      };
+    } else {
+      try {
+        const hashed = bcrypt.hashSync(
+          req.password,
+          bcrypt.genSaltSync(this.passwordHashKey)
+        );
+        req.password = hashed;
+        return this.create(req);
+      } catch (err) {
+        return {
+          data: {},
+          code: 500,
+          message: err,
+        };
+      }
+    }
+  }
+
+  async login(req: any) {
+    let res = {
+      data: {},
+      code: 500,
+      message: "Error",
+    };
+    if (!req.username || !req.password) {
+      res = {
+        data: {},
+        code: 500,
+        message: "Username and Password are required",
+      };
+    } else {
+      try {
+        await this.getUser(req.username, this.repo).then(async (user) => {
+          if (user) {
+            let check = this.comparePassword(req.password, user.password);
+            if (check) {
+              const token = jwt.sign(
+                { username: req.username, _id: user._id },
+                this.loginSecret,
+                {
+                  expiresIn: this.sessionDuration,
+                }
+              );
+              let _user = await user;
+              delete _user.password;
+              delete _user.is_active;
+              delete _user.created_at;
+              delete _user.created_by;
+              delete _user.updated_at;
+              delete _user.updated_by;
+              delete _user.deleted_at;
+              delete _user.deleted_by;
+              res = {
+                data: {
+                  user: _user,
+                  token,
+                },
+                code: 200,
+                message: "Logged In",
+              };
+            } else {
+              res = {
+                data: {},
+                code: 401,
+                message: "Incorrect Password",
+              };
+            }
+          } else {
+            res = {
+              data: {},
+              code: 500,
+              message: "User Not Found",
+            };
+          }
+        });
+      } catch (err) {
+        res = {
+          data: {},
+          code: 500,
+          message: "" + err,
+        };
+      }
+    }
+    return res;
+  }
+  async getUser(username: string, repo: any) {
+    try {
+      const data = await repo.findOne({
+        where: { username: username },
+      });
+      return data;
+    } catch (err) {
+      return false;
+    }
+  }
+  private comparePassword(
+    _requestPassword: string,
+    _responsePassword: string
+  ): any {
+    let x = bcrypt.compareSync(_requestPassword, _responsePassword);
+    return x;
+  }
+  public getToken(req: any): string {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.split(" ")[0] === "Bearer"
+    ) {
+      return req.headers.authorization.split(" ")[1];
+    } else if (req.query && req.query.token) {
+      return req.query.token;
+    }
+
+    return "";
+  }
+  async refreshToken(req: any) {
+    const { refreshToken } = req;
+    let res = {
+      data: {},
+      code: 400,
+      message: "Error",
+    };
+    if (!refreshToken) {
+      res.code = 401;
+      res.message = "Refresh token not provided";
+    }
+
+    // if (!refreshToken.includes(refreshToken)) {
+    //   res.code = 403;
+    //   res.message = "Invalid refresh token";
+    // }
+
+    try {
+      jwt.verify(refreshToken, this.loginSecret, (err: any, user: any) => {
+        if (err) {
+          res.code = 403;
+          res.message = "Invalid refresh token";
+        } else {
+          const token = jwt.sign(
+            { username: req.username, _id: user._id },
+            this.loginSecret,
+            {
+              expiresIn: this.sessionDuration,
+            }
+          );
+
+          res.data = { token };
+          res.message = "Token Refreshed";
+        }
+      });
+    } catch (err) {
+      res = {
+        data: {},
+        code: 500,
+        message: "" + err,
+      };
+    }
+    return res;
+  }
+}

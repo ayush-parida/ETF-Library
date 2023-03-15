@@ -1,0 +1,68 @@
+import { Model, Sequelize } from "sequelize-typescript";
+
+const dbConfigJson = require("./db_config.json");
+interface DbConfig {
+  configName: string;
+  hostName: string;
+  userName: string;
+  password: string;
+  database: string;
+  port: string;
+  dialect: any;
+}
+
+export class DbConfigs {
+  public dbs: any[] = [];
+  public dbConfs: any[] = dbConfigJson;
+  public connect(models: any[]): any[] {
+    dbConfigJson.forEach((config: DbConfig) => {
+      if (config) {
+        let operatorsAliases: any = false;
+        let sequelize: Sequelize = new Sequelize(
+          config.database,
+          config.userName,
+          config.password,
+          {
+            host: config.hostName,
+            dialect: config.dialect,
+            port: parseInt(config.port),
+            operatorsAliases,
+            repositoryMode: true,
+            pool: {
+              max: 10,
+              min: 0,
+              acquire: 20000,
+              idle: 5000,
+            },
+          }
+        );
+        sequelize
+          .authenticate()
+          .then(() => {
+            console.log(
+              "Connection has been established successfully for",
+              config.configName
+            );
+          })
+          .catch((err) => {
+            console.error(
+              "Unable to connect to the database:",
+              config.configName,
+              err
+            );
+          });
+        models.forEach((model: { configName: string; models: any[] }) => {
+          if (model.configName == config.configName) {
+            if (model.models.length) sequelize.addModels(model.models);
+          }
+        });
+        let db: any = {};
+        db.Sequelize = Sequelize;
+        db.sequelize = sequelize;
+        this.dbs.push({ configName: config.configName, db: db });
+        console.log(db.sequelize, "---------------------------------------");
+      }
+    });
+    return this.dbs;
+  }
+}
